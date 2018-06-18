@@ -1,0 +1,58 @@
+#######
+#rePWM#
+#######
+
+rePWM is a simple script to build a PFM/PWM model from a dataset using a PWM/PFM seed. The PWM/PFM model is built by masking each position of the seed PWM in turn with a flat prior distribution to create an unbiased, 'multinomial' estimate of the PWM from the given data. See Figure 1b in "Jolma, Arttu, et al. "DNA-binding specificities of human transcription factors." Cell 152.1-2 (2013): 327-339." for a more detailed explanation.
+
+rePWM uses MOODS to calculate motif matches, so MOODS should be installed and the script moods_dna.py added to the system path. Other than that, only a standard python installation is needed. Instructions on how to install MOODS can be found from https://github.com/jhkorhonen/MOODS .
+
+Help on running rePWM can be found by typing
+
+rePWM.py -h
+
+assuming that the script is in your system path. This should print the following documentation:
+
+usage: rePWM.py [-h] [--mtype {pwm,pfm}] [--p P] [--t T] [--B B]
+                [--Bforce BFORCE] [--no-rc {yes,no}] [--batch {yes,no}]
+                [--bg BG BG BG BG] [--ps PS] [--lo-bg LO_BG LO_BG LO_BG LO_BG]
+                [--tmpdir TMPDIR] [--keeptmp {yes,no}] [--v {yes,no}]
+                matrix seq [seq ...] outfile
+
+positional arguments:
+  matrix                The input position frequency matrix file (tab-
+                        separeted).
+  seq                   Full path to a Fasta-file containing sequences used to
+                        recalculate the PFM.
+  outfile               Full path to the output file (the recalculated PFM).
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --tmpdir TMPDIR       Directory used to store temporary files (masked
+                        PFMs/PWMs, MOODS output files), default = ./
+  --keeptmp {yes,no}    If yes, keep tmp files (default=no).
+  --v {yes,no}          If yes (=default), print progress to screen.
+
+Matrix file type::
+  --mtype {pwm,pfm}     pwm or pfm (default=pfm).
+
+Threshold selection (exactly one required)::
+  --p P                 Compute threshold from p-value.
+  --t T                 Use specified absolute threshold.
+  --B B                 Return at least the specified amount of best matches.
+  --Bforce BFORCE       Return EXACTLY the specified amount of best matches to
+                        EACH of the masked motifs.
+
+Search and model behaviour (optional)::
+  --no-rc {yes,no}      If yes, disable matching versus the reverse complement
+                        strand (default=no).
+  --batch {yes,no}      If yes, do not recompute thresholds from p-values for
+                        each sequence separately (recommended when dealing
+                        with lots of short sequences, default=no).
+  --bg BG BG BG BG      Background distribution for computing thresholds from
+                        p-value with --batch (default is 0.25 for all
+                        alleles).
+  --ps PS               Specify pseudocount for log-odds conversion
+                        (default=0.1).
+  --lo-bg LO_BG LO_BG LO_BG LO_BG
+                        Background distribution for log-odds conversion
+                        (default is 0.25 for all alleles).
