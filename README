@@ -4,9 +4,20 @@
 
 rePWM is a simple script to build a PFM/PWM model from a dataset using a PWM/PFM seed. The PWM/PFM model is built by masking each position of the seed PWM in turn with a flat prior distribution to create an unbiased, 'multinomial' estimate of the PWM from the given data. See Figure 1b in "Jolma, Arttu, et al. "DNA-binding specificities of human transcription factors." Cell 152.1-2 (2013): 327-339." for a more detailed explanation.
 
-rePWM uses MOODS to calculate motif matches, so MOODS should be installed and the script moods_dna.py added to the system path. Other than that, only a standard python installation is needed. Instructions on how to install MOODS can be found from https://github.com/jhkorhonen/MOODS .
+rePWM uses MOODS to calculate motif matches, so MOODS should be installed and the script moods_dna.py added to the system path. Other than that, only a standard python installation and standard Linux utilities grep, cat, sort and head are needed. Instructions on how to install MOODS can be found from https://github.com/jhkorhonen/MOODS .
+
+TEST
+----
+
+This test command run using the data in folder test/ should reproduce the matrix in folder test_results/
+
+rePWM.py 
 
 Help on running rePWM can be found by typing
+
+
+HELP
+----
 
 rePWM.py -h
 

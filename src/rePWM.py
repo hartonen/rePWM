@@ -72,10 +72,10 @@ def rePWM():
     moods_call = "moods_dna.py -o "+args.tmpdir+"moods.out "
     if args.mtype=='pwm':
         moods_call += "-S "
-        for i in range(0,mlen): moods_call += args.tmpdir+"rePWM_m"+str(c)+".pwm "
+        for c in range(0,mlen): moods_call += args.tmpdir+"rePWM_m"+str(c)+".pwm "
     else:
         moods_call += "-m "
-        for i in range(0,mlen): moods_call += args.tmpdir+"rePWM_m"+str(c)+".pfm "
+        for c in range(0,mlen): moods_call += args.tmpdir+"rePWM_m"+str(c)+".pfm "
 
     moods_call += "-s "
     for seq in args.seq: moods_call += seq+" "
@@ -83,7 +83,7 @@ def rePWM():
     if args.p!=None: moods_call += "-p "+str(args.p)+" "
     elif args.t!=None: moods_call += "-t "+str(args.t)+" "
     elif args.B!=None: moods_call += "-B "+str(args.B)+" "
-    else: moods_call += "-B "+str(args.Bforce)+" "
+    #else: moods_call += "-B "+str(args.Bforce)+" "
 
     if args.no_rc=='yes': moods_call += "-R "
     if args.batch=='yes':
@@ -106,26 +106,34 @@ def rePWM():
     #if exactly a set number of hits to each of the masked matrices is required, we remove all worse hits from moods.out
     if args.Bforce!=None:
         for c in range(0,mlen):
-            if args.mtype=='pwm': name = args.tmpdir+"rePWM_m"+str(c)+".pwm"
-            else: name = args.tmpdir+"rePWM_m"+str(c)+".pfm"
+            if args.mtype=='pwm': name = "rePWM_m"+str(c)+".pwm"
+            else: name = "rePWM_m"+str(c)+".pfm"
 
-            print 'grep "'+name+'" '+args.tmpdir+'moods.out | sort -k5,5 -nr | head -'+str(args.Bforce)+' > '+args.tmpdir+'moods_sorted_'+str(c)+".out"
+            #print 'grep "'+name+'" '+args.tmpdir+'moods.out | sort -t , -k5,5 -gr | head -'+str(args.Bforce)+' > '+args.tmpdir+'moods_sorted_'+str(c)+".out"
+
+            print 'grep "'+name+'" '+args.tmpdir+'moods.out | sort -t , -k5,5 -gr > '+args.tmpdir+'moods_sorted_'+str(c)+"tmp.out"
+            system('grep "'+name+'" '+args.tmpdir+'moods.out | sort -t , -k5,5 -gr > '+args.tmpdir+'moods_sorted_'+str(c)+"tmp.out")
+            print 'head -'+str(args.Bforce)+' '+args.tmpdir+'moods_sorted_'+str(c)+"tmp.out"+' > '+args.tmpdir+'moods_sorted_'+str(c)+".out"
+            system('head -'+str(args.Bforce)+' '+args.tmpdir+'moods_sorted_'+str(c)+"tmp.out"+' > '+args.tmpdir+'moods_sorted_'+str(c)+".out")
+            #system('grep "'+name+'" '+args.tmpdir+'moods.out | sort -t , -k5,5 -gr | head -'+str(args.Bforce)+' > '+args.tmpdir+'moods_sorted_'+str(c)+".out")
+
+        moodsfile = args.tmpdir+'moods_sorted.out'
+        system('cat '+args.tmpdir+'moods_sorted_*.out > '+moodsfile)
+    else: moodsfile = args.tmpdir+"moods.out"
             
-            system('grep "'+name+'" '+args.tmpdir+'moods.out | sort -k5,5 -nr | head -'+str(args.Bforce)+' > '+args.tmpdir+'moods_sorted_'+str(c)+".out")
-
-        system('cat '+args.tmpdir+'moods_sorted_*.out > '+args.tmpdir+'moods.out')
-        
-    with open(args.tmpdir+"moods.out",'r') as csvfile:
+    with open(moodsfile,'r') as csvfile:
         r = csv.reader(csvfile,delimiter=',')
         for row in r:
             seq = row[5]
-            ind = 0
-            for l in seq.upper():
-                if l=='A': new_matrix[0][ind] += 1
-                elif l=='C': new_matrix[1][ind] += 1
-                elif l=='G': new_matrix[2][ind] += 1
-                elif l=='T': new_matrix[3][ind] += 1
-                ind += 1
+            #ind = 0
+            c = row[1].split('_')[1]
+            c = int(c[1:-4])
+            l = seq.upper()[c]
+            if l=='A': new_matrix[0][c] += 1
+            elif l=='C': new_matrix[1][c] += 1
+            elif l=='G': new_matrix[2][c] += 1
+            elif l=='T': new_matrix[3][c] += 1
+            #ind += 1
 
     #saving the PFM into a file
     with open(args.outfile,'w') as csvfile:
@@ -136,7 +144,11 @@ def rePWM():
 
     if args.keeptmp=='no':
         system("rm "+args.tmpdir+"moods.out")
-        system("rm "+args.tmpdir+"rePWM_m*.pwm")
+        system("rm "+args.tmpdir+"rePWM_m*.p*m")
+        if args.Bforce!=None:
+            system("rm "+args.tmpdir+"moods_sorted_*.out")
+            system("rm "+args.tmpdir+'moods_sorted.out')
+        
                 
 #end
 
