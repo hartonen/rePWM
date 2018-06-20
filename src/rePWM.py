@@ -117,6 +117,7 @@ def rePWM():
             system('head -'+str(args.Bforce)+' '+args.tmpdir+'moods_sorted_'+str(c)+"tmp.out"+' > '+args.tmpdir+'moods_sorted_'+str(c)+".out")
             #system('grep "'+name+'" '+args.tmpdir+'moods.out | sort -t , -k5,5 -gr | head -'+str(args.Bforce)+' > '+args.tmpdir+'moods_sorted_'+str(c)+".out")
 
+        system("rm "+args.tmpdir+"moods_sorted_*tmp.out")
         moodsfile = args.tmpdir+'moods_sorted.out'
         system('cat '+args.tmpdir+'moods_sorted_*.out > '+moodsfile)
     else: moodsfile = args.tmpdir+"moods.out"
@@ -125,6 +126,8 @@ def rePWM():
         r = csv.reader(csvfile,delimiter=',')
         for row in r:
             seq = row[5]
+            strand = row[3]
+            if strand=='-': seq = revComp(seq)
             #ind = 0
             c = row[1].split('_')[1]
             c = int(c[1:-4])
@@ -161,5 +164,17 @@ def rePWM():
         
                 
 #end
+
+def revComp(seq):
+    #returns the reverse complement sequence of seq
+    #seq = seq[::-1]
+    newseq = ""
+    for s in seq[::-1]:
+        if s=='A': newseq += 'T'
+        elif s=='T': newseq += 'A'
+        elif s=='G': newseq += 'C'
+        elif s=='C': newseq += 'G'
+        elif s=='n': newseq += 'n'
+    return newseq
 
 rePWM()
