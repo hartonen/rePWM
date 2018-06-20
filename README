@@ -9,38 +9,51 @@ rePWM uses MOODS to calculate motif matches, so MOODS should be installed and th
 TEST
 ----
 
-This test command run using the data in folder test/ (sequences from GP5D MYC ChIP-nexus and the MAX SELEX PFM obtained with HT-SELEX) should reproduce the matrix in folder test_results/
+This test command run using the data in folder test/ (sequences from LoVo CTCF ChIP-nexus and the corresponding CTCF PFM obtained with MEME) should reproduce the matrix in folder test_results/
 
-rePWM.py test/MAX_Control_TTCTGG40NTGC_KAE_NYCACGTGCN_m1_c4_short.pfm test/top1000_peaks.fasta test_results/multinomial_MYC.pfm --t 2 --keeptmp no --Bforce 500
+rePWM.py test/motif1.pfm test/top1000_peaks.fasta test_results/multinomial_CTCF.pfm --Bforce 200 --t 4
 
 It will print the following output to stdout:
 
 Creating masked matrices... done!
 running MOODS:
- moods_dna.py -o ./moods.out -m ./rePWM_m0.pfm ./rePWM_m1.pfm ./rePWM_m2.pfm ./rePWM_m3.pfm ./rePWM_m4.pfm ./rePWM_m5.pfm ./rePWM_m6.pfm ./rePWM_m7.pfm ./rePWM_m8.pfm ./rePWM_m9.pfm -s test/top1000_peaks.fasta -t 2.0 --ps 0.1 --lo-bg 0.25 0.25 0.25 0.25  ...
+ moods_dna.py -o ./moods.out -m ./rePWM_m0.pfm ./rePWM_m1.pfm ./rePWM_m2.pfm ./rePWM_m3.pfm ./rePWM_m4.pfm ./rePWM_m5.pfm ./rePWM_m6.pfm ./rePWM_m7.pfm ./rePWM_m8.pfm ./rePWM_m9.pfm ./rePWM_m10.pfm ./rePWM_m11.pfm ./rePWM_m12.pfm ./rePWM_m13.pfm ./rePWM_m14.pfm -s test/top1000_peaks.fasta -t 4.0 --ps 0.1 --lo-bg 0.25 0.25 0.25 0.25  ...
 done!
 Re-calculating the matrix...
 grep "rePWM_m0.pfm" ./moods.out | sort -t , -k5,5 -gr > ./moods_sorted_0tmp.out
-head -500 ./moods_sorted_0tmp.out > ./moods_sorted_0.out
+head -200 ./moods_sorted_0tmp.out > ./moods_sorted_0.out
 grep "rePWM_m1.pfm" ./moods.out | sort -t , -k5,5 -gr > ./moods_sorted_1tmp.out
-head -500 ./moods_sorted_1tmp.out > ./moods_sorted_1.out
+head -200 ./moods_sorted_1tmp.out > ./moods_sorted_1.out
 grep "rePWM_m2.pfm" ./moods.out | sort -t , -k5,5 -gr > ./moods_sorted_2tmp.out
-head -500 ./moods_sorted_2tmp.out > ./moods_sorted_2.out
+head -200 ./moods_sorted_2tmp.out > ./moods_sorted_2.out
 grep "rePWM_m3.pfm" ./moods.out | sort -t , -k5,5 -gr > ./moods_sorted_3tmp.out
-head -500 ./moods_sorted_3tmp.out > ./moods_sorted_3.out
+head -200 ./moods_sorted_3tmp.out > ./moods_sorted_3.out
 grep "rePWM_m4.pfm" ./moods.out | sort -t , -k5,5 -gr > ./moods_sorted_4tmp.out
-head -500 ./moods_sorted_4tmp.out > ./moods_sorted_4.out
+head -200 ./moods_sorted_4tmp.out > ./moods_sorted_4.out
 grep "rePWM_m5.pfm" ./moods.out | sort -t , -k5,5 -gr > ./moods_sorted_5tmp.out
-head -500 ./moods_sorted_5tmp.out > ./moods_sorted_5.out
+head -200 ./moods_sorted_5tmp.out > ./moods_sorted_5.out
 grep "rePWM_m6.pfm" ./moods.out | sort -t , -k5,5 -gr > ./moods_sorted_6tmp.out
-head -500 ./moods_sorted_6tmp.out > ./moods_sorted_6.out
+head -200 ./moods_sorted_6tmp.out > ./moods_sorted_6.out
 grep "rePWM_m7.pfm" ./moods.out | sort -t , -k5,5 -gr > ./moods_sorted_7tmp.out
-head -500 ./moods_sorted_7tmp.out > ./moods_sorted_7.out
+head -200 ./moods_sorted_7tmp.out > ./moods_sorted_7.out
 grep "rePWM_m8.pfm" ./moods.out | sort -t , -k5,5 -gr > ./moods_sorted_8tmp.out
-head -500 ./moods_sorted_8tmp.out > ./moods_sorted_8.out
+head -200 ./moods_sorted_8tmp.out > ./moods_sorted_8.out
 grep "rePWM_m9.pfm" ./moods.out | sort -t , -k5,5 -gr > ./moods_sorted_9tmp.out
-head -500 ./moods_sorted_9tmp.out > ./moods_sorted_9.out
+head -200 ./moods_sorted_9tmp.out > ./moods_sorted_9.out
+grep "rePWM_m10.pfm" ./moods.out | sort -t , -k5,5 -gr > ./moods_sorted_10tmp.out
+head -200 ./moods_sorted_10tmp.out > ./moods_sorted_10.out
+grep "rePWM_m11.pfm" ./moods.out | sort -t , -k5,5 -gr > ./moods_sorted_11tmp.out
+head -200 ./moods_sorted_11tmp.out > ./moods_sorted_11.out
+grep "rePWM_m12.pfm" ./moods.out | sort -t , -k5,5 -gr > ./moods_sorted_12tmp.out
+head -200 ./moods_sorted_12tmp.out > ./moods_sorted_12.out
+grep "rePWM_m13.pfm" ./moods.out | sort -t , -k5,5 -gr > ./moods_sorted_13tmp.out
+head -200 ./moods_sorted_13tmp.out > ./moods_sorted_13.out
+grep "rePWM_m14.pfm" ./moods.out | sort -t , -k5,5 -gr > ./moods_sorted_14tmp.out
+head -200 ./moods_sorted_14tmp.out > ./moods_sorted_14.out
 done!
+
+Matches to the output motif using TOMTOM: http://meme-suite.org/opal-jobs/appTOMTOM_5.0.0_1529496412046-1109278779/tomtom.html
+Matches to the input motif using TOMTOM: http://meme-suite.org/opal-jobs/appTOMTOM_5.0.0_1529496588319-1195667469/tomtom.html
 
 
 HELP
