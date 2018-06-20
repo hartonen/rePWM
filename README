@@ -67,6 +67,13 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
+  --Bforce BFORCE       Return EXACTLY the specified amount of best matches to
+                        EACH of the masked motifs. This means that the script
+                        tries to make sure that each column of the final PFM
+                        is constructed from same number of sequences. This
+                        might not always work depending on the MOODS threshold
+                        given. If there are too few sequences in some of the
+                        columns, a warning is printed.
   --tmpdir TMPDIR       Directory used to store temporary files (masked
                         PFMs/PWMs, MOODS output files), default = ./
   --keeptmp {yes,no}    If yes, keep tmp files (default=no).
@@ -75,12 +82,10 @@ optional arguments:
 Matrix file type::
   --mtype {pwm,pfm}     pwm or pfm (default=pfm).
 
-Threshold selection (exactly one required)::
+Threshold selection in MOODS (exactly one required)::
   --p P                 Compute threshold from p-value.
   --t T                 Use specified absolute threshold.
   --B B                 Return at least the specified amount of best matches.
-  --Bforce BFORCE       Return EXACTLY the specified amount of best matches to
-                        EACH of the masked motifs.
 
 Search and model behaviour (optional)::
   --no-rc {yes,no}      If yes, disable matching versus the reverse complement
