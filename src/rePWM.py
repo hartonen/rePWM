@@ -24,11 +24,11 @@ def rePWM():
     group0 = parser.add_argument_group("Matrix file type:")
     group0.add_argument("--mtype",help="pwm or pfm (default=pfm).",type=str,choices=['pwm','pfm'],default='pfm')
     
-    group1 = parser.add_argument_group("Threshold selection (exactly one required):")
+    group1 = parser.add_argument_group("Threshold selection in MOODS (exactly one required):")
     group1.add_argument("--p",help="Compute threshold from p-value.",type=float,default=None)
     group1.add_argument("--t",help="Use specified absolute threshold.",type=float,default=None)
     group1.add_argument("--B",help="Return at least the specified amount of best matches.",type=int,default=None)
-    group1.add_argument("--Bforce",help="Return EXACTLY the specified amount of best matches to EACH of the masked motifs.",type=int,default=None)
+    parser.add_argument("--Bforce",help="Return EXACTLY the specified amount of best matches to EACH of the masked motifs. This means that the script tries to make sure that each column of the final PFM is constructed from same number of sequences. This might not always work depending on the MOODS threshold given. If there are too few sequences in some of the columns, a warning is printed.",type=int,default=None)
 
     group2 = parser.add_argument_group("Search and model behaviour (optional):")
     group2.add_argument("--no-rc",help="If yes, disable matching versus the reverse complement strand (default=no).",type=str,choices=['yes','no'],default='no')
@@ -93,13 +93,13 @@ def rePWM():
     moods_call += "--ps "+str(args.ps)+" --lo-bg "
     for l in args.lo_bg: moods_call += str(l)+" "
 
-    if args.v=='yes': print "running MOODS: "+moods_call+" ...",
+    if args.v=='yes': print "running MOODS:\n "+moods_call+" ..."
     system(moods_call)
     if args.v=='yes': print "done!"
 
     #next we need to parse the results of individual masked matrices from the MOODS output file
 
-    if args.v=='yes': print "Re-calculating the matrix...",
+    if args.v=='yes': print "Re-calculating the matrix..."
     new_matrix = []
     for i in range(0,4): new_matrix.append([0 for j in range(0,mlen)])
 
@@ -134,6 +134,16 @@ def rePWM():
             elif l=='G': new_matrix[2][c] += 1
             elif l=='T': new_matrix[3][c] += 1
             #ind += 1
+            
+    if args.Bforce!=None:
+        #testing if there is less than desired number of sequences in some of the final PFM columns
+        for c in range(0,mlen):
+            count = 0
+            for row in new_matrix: count += row[c]
+            if count<args.Bforce:
+                if args.t!=None: print "Column "+str(c)+" of the final PFM is built from only "+str(count)+" sequences ("+str(args.Bforce)+" was requested). Try decreasing the absolute score threshold value."
+                elif args.p!=None: print "Column "+str(c)+" of the final PFM is built from only "+str(count)+" sequences ("+str(args.Bforce)+" was requested). Try increasing the p-value threshold."
+                elif args.B!=None: print "Column "+str(c)+" of the final PFM is built from only "+str(count)+" sequences ("+str(args.Bforce)+" was requested). Try increasing the minimum number of hits reported."
 
     #saving the PFM into a file
     with open(args.outfile,'w') as csvfile:
