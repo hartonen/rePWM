@@ -1,7 +1,16 @@
 #!/usr/bin/env python
 
+import matplotlib
+matplotlib.use("Agg")
+from matplotlib import pyplot as plt
+from matplotlib import colors
+
 import argparse
 import csv
+
+import numpy as np
+import pandas as pd
+import logomaker as lm
 
 from os import system
 
@@ -51,21 +60,49 @@ def rePWM():
         for row in r:
             matrix.append([float(i) for i in row])
             mlen = len(row)
+    matrix = np.array(matrix,dtype=int)
+    #plotting the input matrix sequence logo
+    plotLogo(np.array(matrix),"position","-\Delta G",args.outfile+".INPUT.png")
+    #Getting the seed sequence as the concensus of the PFM matrix
+    #seed = ""
+    #print(matrix)
+    #print(matrix.shape)
+    #for i in range(0,matrix.shape[1]):
+    #    max_ind = np.argmax(matrix[:,i])
+    #    if max_ind==0: seed += "A"
+    #    elif max_ind==1: seed += "C"
+    #    elif max_ind==2: seed += "G"
+    #    else: seed += "T"
 
+    #print("seed="+seed)
+    #then creating the Hamming-1 neighborhood of the seed
+    #hamming1 = set([seed])
+    #letters = ['A','C','G','T']
+    #for i in range(0,len(seed)):
+    #    for l in letters:
+    #        if l!=seed[i]:
+    #            auxkmer = seed[:i]+l+seed[i+1:]
+    #            hamming1.add(auxkmer)
+    #hamming1 = list(hamming1)
+    #print(hamming1)
     #then saving each masked matrix into a temporary file
     for c in range(0,mlen):
         if args.mtype=='pwm':
             aux = 0.25
             auxfile = args.tmpdir+"rePWM_m"+str(c)+".pwm"
         else:
-            aux = sum([row[c] for row in matrix])/4
+            aux = np.sum(matrix[:,c])/4.0
+            #aux = sum([matrix[c,i] for i in range(0,matrix.shape[1])])/4
             auxfile = args.tmpdir+"rePWM_m"+str(c)+".pfm"
-        with open(auxfile,'w') as csvfile:
-            w = csv.writer(csvfile,delimiter='\t')
-            for row in matrix:
-                if c==0: w.writerow([aux]+row[1:])
-                elif c==len(row)-1: w.writerow(row[:-1]+[aux])
-                else: w.writerow(row[:c]+[aux]+row[c:])
+        #with open(auxfile,'w') as csvfile:
+        auxmatrix = np.copy(matrix)
+        auxmatrix[:,c] = aux
+        np.savetxt(auxfile,auxmatrix,delimiter='\t',fmt='%1.1f')
+        #    w = csv.writer(csvfile,delimiter='\t')
+        #    for row in matrix:
+        #        if c==0: w.writerow([aux]+row[1:])
+        #        elif c==len(row)-1: w.writerow(row[:-1]+[aux])
+        #        else: w.writerow(row[:c]+[aux]+row[c:])
     if args.v=='yes': print("done!")
 
     #running MOODS for all the masked matrices
@@ -125,13 +162,19 @@ def rePWM():
     with open(moodsfile,'r') as csvfile:
         r = csv.reader(csvfile,delimiter=',')
         for row in r:
-            seq = row[5]
+            #print(row)
+            seq = row[5].upper()
             strand = row[3]
             if strand=='-': seq = revComp(seq)
+            #if seq not in hamming1: continue
+            
             #ind = 0
             c = row[1].split('_')[1]
             c = int(c[1:-4])
-            l = seq.upper()[c]
+            #print("c="+str(c))
+            #print("seq="+seq.upper())
+            #print(len(seq.upper()))
+            l = seq[c]
             if l=='A': new_matrix[0][c] += 1
             elif l=='C': new_matrix[1][c] += 1
             elif l=='G': new_matrix[2][c] += 1
@@ -152,6 +195,9 @@ def rePWM():
     with open(args.outfile,'w') as csvfile:
         w = csv.writer(csvfile,delimiter='\t')
         for row in new_matrix: w.writerow(row)
+
+    #and plotting the corresponding sequence logo
+    plotLogo(np.array(new_matrix),"position","-\Delta G",args.outfile+".png")
 
     if args.v=='yes': print("done!")
 
@@ -176,5 +222,22 @@ def revComp(seq):
         elif s=='C': newseq += 'G'
         elif s=='n': newseq += 'n'
     return newseq
+
+def plotLogo(matrix,xlabel,ylabel,outfile):
+    #plots a logo of matrix using logoMaker
+
+    fig,ax = plt.subplots()
+    
+    matrix_df = pd.DataFrame(matrix.transpose())
+    matrix_df.columns = ['A','C','G','T']
+    logo = lm.Logo(df=matrix_df,color_scheme='classic')
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+
+    plt.savefig(outfile)
+    plt.close(fig)
+    plt.clf()
+    plt.cla()
+    return True
 
 rePWM()
