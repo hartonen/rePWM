@@ -69,7 +69,7 @@ def rePWM():
     if args.v=='yes': print("done!")
 
     #running MOODS for all the masked matrices
-    moods_call = "moods_dna.py -o "+args.tmpdir+"moods.out "
+    moods_call = "moods-dna.py -o "+args.tmpdir+"moods.out "
     if args.mtype=='pwm':
         moods_call += "-S "
         for c in range(0,mlen): moods_call += args.tmpdir+"rePWM_m"+str(c)+".pwm "
