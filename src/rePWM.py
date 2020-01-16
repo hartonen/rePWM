@@ -42,7 +42,7 @@ def rePWM():
     parser.add_argument("--v",help="If yes (=default), print progress to screen.",type=str,choices=['yes','no'],default='yes')
     args = parser.parse_args()
 
-    if args.v=='yes': print "Creating masked matrices...",
+    if args.v=='yes': print("Creating masked matrices...")
     #first creating the masked versions of the input matrices
     matrix = []
     mlen = 0
@@ -66,7 +66,7 @@ def rePWM():
                 if c==0: w.writerow([aux]+row[1:])
                 elif c==len(row)-1: w.writerow(row[:-1]+[aux])
                 else: w.writerow(row[:c]+[aux]+row[c:])
-    if args.v=='yes': print "done!"
+    if args.v=='yes': print("done!")
 
     #running MOODS for all the masked matrices
     moods_call = "moods_dna.py -o "+args.tmpdir+"moods.out "
@@ -93,13 +93,13 @@ def rePWM():
     moods_call += "--ps "+str(args.ps)+" --lo-bg "
     for l in args.lo_bg: moods_call += str(l)+" "
 
-    if args.v=='yes': print "running MOODS:\n "+moods_call+" ..."
+    if args.v=='yes': print("running MOODS:\n "+moods_call+" ...")
     system(moods_call)
-    if args.v=='yes': print "done!"
+    if args.v=='yes': print("done!")
 
     #next we need to parse the results of individual masked matrices from the MOODS output file
 
-    if args.v=='yes': print "Re-calculating the matrix..."
+    if args.v=='yes': print("Re-calculating the matrix...")
     new_matrix = []
     for i in range(0,4): new_matrix.append([0 for j in range(0,mlen)])
 
@@ -111,9 +111,9 @@ def rePWM():
 
             #print 'grep "'+name+'" '+args.tmpdir+'moods.out | sort -t , -k5,5 -gr | head -'+str(args.Bforce)+' > '+args.tmpdir+'moods_sorted_'+str(c)+".out"
 
-            print 'grep "'+name+'" '+args.tmpdir+'moods.out | sort -t , -k5,5 -gr > '+args.tmpdir+'moods_sorted_'+str(c)+"tmp.out"
+            print('grep "'+name+'" '+args.tmpdir+'moods.out | sort -t , -k5,5 -gr > '+args.tmpdir+'moods_sorted_'+str(c)+"tmp.out")
             system('grep "'+name+'" '+args.tmpdir+'moods.out | sort -t , -k5,5 -gr > '+args.tmpdir+'moods_sorted_'+str(c)+"tmp.out")
-            print 'head -'+str(args.Bforce)+' '+args.tmpdir+'moods_sorted_'+str(c)+"tmp.out"+' > '+args.tmpdir+'moods_sorted_'+str(c)+".out"
+            print('head -'+str(args.Bforce)+' '+args.tmpdir+'moods_sorted_'+str(c)+"tmp.out"+' > '+args.tmpdir+'moods_sorted_'+str(c)+".out")
             system('head -'+str(args.Bforce)+' '+args.tmpdir+'moods_sorted_'+str(c)+"tmp.out"+' > '+args.tmpdir+'moods_sorted_'+str(c)+".out")
             #system('grep "'+name+'" '+args.tmpdir+'moods.out | sort -t , -k5,5 -gr | head -'+str(args.Bforce)+' > '+args.tmpdir+'moods_sorted_'+str(c)+".out")
 
@@ -144,16 +144,16 @@ def rePWM():
             count = 0
             for row in new_matrix: count += row[c]
             if count<args.Bforce:
-                if args.t!=None: print "Column "+str(c)+" of the final PFM is built from only "+str(count)+" sequences ("+str(args.Bforce)+" was requested). Try decreasing the absolute score threshold value."
-                elif args.p!=None: print "Column "+str(c)+" of the final PFM is built from only "+str(count)+" sequences ("+str(args.Bforce)+" was requested). Try increasing the p-value threshold."
-                elif args.B!=None: print "Column "+str(c)+" of the final PFM is built from only "+str(count)+" sequences ("+str(args.Bforce)+" was requested). Try increasing the minimum number of hits reported."
+                if args.t!=None: print("Column "+str(c)+" of the final PFM is built from only "+str(count)+" sequences ("+str(args.Bforce)+" was requested). Try decreasing the absolute score threshold value.")
+                elif args.p!=None: print("Column "+str(c)+" of the final PFM is built from only "+str(count)+" sequences ("+str(args.Bforce)+" was requested). Try increasing the p-value threshold.")
+                elif args.B!=None: print("Column "+str(c)+" of the final PFM is built from only "+str(count)+" sequences ("+str(args.Bforce)+" was requested). Try increasing the minimum number of hits reported.")
 
     #saving the PFM into a file
     with open(args.outfile,'w') as csvfile:
         w = csv.writer(csvfile,delimiter='\t')
         for row in new_matrix: w.writerow(row)
 
-    if args.v=='yes': print "done!"
+    if args.v=='yes': print("done!")
 
     if args.keeptmp=='no':
         system("rm "+args.tmpdir+"moods.out")
